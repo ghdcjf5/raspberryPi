@@ -1,0 +1,406 @@
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
+volatile 	int serial_port ;
+	volatile char dat;
+volatile	int speed=500;
+	volatile int Lled = 0;
+volatile	int Rled = 0;
+volatile int Fled = 0;
+volatile int Bled = 0;
+volatile int cnt = 0;
+	int Lledpin= 3;
+	int Rledpin= 4;
+	const int LM_spdControl = 1;
+	const int LM_FBControl = 0;
+	const int RM_spdControl = 24;
+	const int RM_FBControl = 27;
+	const int Fledpin = 5;
+	const int Bledpin = 6;
+	//const int servoControl = 23;  //pwmpin = 1.24.26.23
+	
+	
+PI_THREAD(t1){
+	
+	
+	
+	/*
+	pwmSetClock(19);
+	pwmSetRange(1000);  
+	
+	pwmSetMode(PWM_MODE_MS);
+	*/
+	
+	while(1){
+		
+		
+		if (serialDataAvail(serial_port)){
+			dat = serialGetchar(serial_port);
+			printf("%c",dat);
+			fflush(stdout); //이걸안하면 버퍼에 문자를 넣어서 버퍼링걸림
+			
+			
+			
+			
+//좌우 버튼 누를시 각 방향의 led 깜빡			
+			if(dat == 'L'){  
+				
+				if(Lled!=HIGH){
+					
+					digitalWrite(Lledpin,HIGH);	
+					delay(300);
+					digitalWrite(Lledpin,LOW);	
+					delay(300);
+					
+					
+					
+				}
+			
+					digitalWrite(LM_FBControl,LOW);
+					digitalWrite(RM_FBControl,HIGH);
+					pwmWrite(LM_spdControl,0);
+					pwmWrite(RM_spdControl,speed);  
+			
+			
+				//delay(40);	  //delay를 적당히 줘야 동작한다.
+			}
+				
+				
+			else if(dat == 'R'){
+				
+				if(Rled!=HIGH){
+					digitalWrite(Rledpin,HIGH);	
+					delay(300);
+					digitalWrite(Rledpin,LOW);	
+					delay(300);
+					
+				}
+				 	digitalWrite(LM_FBControl,LOW);
+					digitalWrite(RM_FBControl,HIGH);
+					pwmWrite(LM_spdControl,speed);
+					pwmWrite(RM_spdControl,0);  
+				
+		
+			}	
+			
+/////////////////////////////////////////////////////		
+
+//전조등  후미등 on/off	
+
+			else if(dat == 'W'){  //전조등 on 
+				
+				Fled = 1;
+				digitalWrite(Fledpin,Fled);
+			}
+			
+			else if(dat == 'w'){  //전조등  off
+				
+				Fled = 0;
+				digitalWrite(Fledpin,Fled);
+			}
+			
+			
+			else if(dat == 'U'){  //후미등  on
+				
+				Bled = 1;
+				digitalWrite(Bledpin,Bled);
+			}
+			
+			else if(dat == 'u'){  //후미등  off
+				
+				Bled = 0;
+				digitalWrite(Bledpin,Bled);
+			}
+			
+			
+/////////////////////////////////////////////////////			
+			
+			
+			
+//좌전진 우전진시 각 led깜빡임, 좌후진 우후진 동작			
+			else  if(dat == 'G'){
+				
+				
+				if(Lled!=HIGH){
+					
+					digitalWrite(Lledpin,HIGH);	
+					delay(300);
+					digitalWrite(Lledpin,LOW);	
+					delay(300);
+				}
+				
+					digitalWrite(LM_FBControl,LOW);
+					digitalWrite(RM_FBControl,HIGH);
+					pwmWrite(LM_spdControl,speed-(speed/2));
+					pwmWrite(RM_spdControl,speed);  
+				
+				
+				//delay(40);	  //delay를 적당히 줘야 동작한다.
+			}
+			
+			
+			else if(dat == 'I'){
+				
+				
+				if(Lled!=HIGH){
+					
+					digitalWrite(Lledpin,HIGH);	
+					delay(300);
+					digitalWrite(Lledpin,LOW);	
+					delay(300);
+				}
+				
+					digitalWrite(LM_FBControl,LOW);
+					digitalWrite(RM_FBControl,HIGH);
+					pwmWrite(LM_spdControl,speed);
+					pwmWrite(RM_spdControl,speed-(speed/2));  
+				
+				
+				//delay(40);	  //delay를 적당히 줘야 동작한다.
+			}
+			
+			else if(dat == 'H'){
+				
+				
+				
+				
+					digitalWrite(LM_FBControl,HIGH);
+					digitalWrite(RM_FBControl,LOW);
+					pwmWrite(LM_spdControl,speed-(speed/2));
+					pwmWrite(RM_spdControl,speed);  
+				
+				
+				//delay(40);	  //delay를 적당히 줘야 동작한다.
+			}
+			
+			else if(dat == 'J'){
+				
+				
+				
+				
+					digitalWrite(LM_FBControl,HIGH);
+					digitalWrite(RM_FBControl,LOW);
+					pwmWrite(LM_spdControl,speed);
+					pwmWrite(RM_spdControl,speed-(speed/2));  
+				
+				
+				//delay(40);	  //delay를 적당히 줘야 동작한다.
+			}
+			
+/////////////////////////////			
+			
+			
+	
+		}
+	}		
+}
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+int main(void){
+	
+	
+	
+	
+	
+	wiringPiSetup();
+	
+	
+	pinMode(LM_FBControl,OUTPUT);
+	
+	pinMode(RM_FBControl,OUTPUT);
+	pinMode(Lledpin,OUTPUT);
+	pinMode(Rledpin,OUTPUT);
+	pinMode(Fledpin,OUTPUT);
+	pinMode(Bledpin,OUTPUT);
+	pinMode(LM_spdControl,PWM_OUTPUT);
+	pinMode(RM_spdControl,PWM_OUTPUT);
+	
+	//pinMode(servoControl,PWM_OUTPUT);
+	
+	
+	pwmSetClock(19);
+	pwmSetRange(1000);  
+	pwmSetMode(PWM_MODE_MS);
+		
+	//pwmsetrange가 1000일떄 모터의pwmwrite범위 약 400~1000
+	
+	
+	
+	piThreadCreate(t1);
+	
+
+	
+	
+	if ((serial_port = serialOpen("/dev/ttyS0",9600))<0){
+		fprintf(stderr, "Unable to open serial device: %s\n",
+				strerror(errno));
+		return 1;
+	}
+	
+	if(wiringPiSetup()==1){
+		fprintf(stdout, "Unable to start wiringPi : %s\n",
+				strerror (errno));
+		return 1;
+		
+		
+	}
+	
+	
+	
+	
+	
+	while(1){
+		
+		
+		
+		
+		if (serialDataAvail(serial_port)){
+			dat = serialGetchar(serial_port);
+			printf("%c",dat);
+			fflush(stdout); //이걸안하면 버퍼에 문자를 넣어서 버퍼링걸림
+			
+			
+		
+//전진 후진시 	
+
+
+		
+			if(dat == 'F'){
+				
+			
+				
+					
+					digitalWrite(LM_FBControl,LOW);
+					digitalWrite(RM_FBControl,HIGH);
+					pwmWrite(LM_spdControl,speed);
+					pwmWrite(RM_spdControl,speed);  
+			}
+		
+			
+			
+			else if(dat == 'B'){
+				
+				
+				
+					digitalWrite(LM_FBControl,HIGH);
+					digitalWrite(RM_FBControl,LOW);
+					pwmWrite(LM_spdControl,speed);
+					pwmWrite(RM_spdControl,speed);
+				//	pwmWrite(servoControl,1500);
+					  //delay를 적당히 줘야 동작한다.
+					  
+					//digitalWrite(Lledpin,LOW);
+					//digitalWrite(Rledpin,LOW);  
+				
+			}
+			
+			
+			
+			
+//정지			
+			else if(dat == 'S'){
+				
+					pwmWrite(LM_spdControl,0);
+					pwmWrite(RM_spdControl,0);
+				
+				
+				//delay(40);	  //delay를 적당히 줘야 동작한다.
+			}
+////////////////////////////////
+//가속 
+			else if (dat == '0'){
+				
+				speed = 400;
+			}
+
+			else if (dat == '1'){
+				
+				speed = 500;
+			}
+
+			else if (dat == '2'){
+				
+				speed = 600;
+			}
+
+			else if (dat == '3'){
+				
+				speed = 650;
+			}
+
+			
+			else if (dat == '4'){
+				
+				speed = 700;
+			}
+
+			else if (dat == '5'){
+				
+				speed = 750;
+			}
+
+				
+			
+			else if (dat == '6'){
+				
+				speed = 800;
+			}
+
+			else if (dat == '7'){
+				
+				speed = 850;
+			}
+			else if (dat == '8'){
+				
+				speed = 900;
+			}
+			else if (dat == '9'){
+				
+				speed = 950;
+			}
+			else if (dat == 'q'){
+				
+				speed = 1000;
+			}
+			
+			
+
+		}
+		
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

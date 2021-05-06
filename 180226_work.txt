@@ -1,0 +1,121 @@
+#c¾ð¾î
+-------------------------------------
+#include <stdio.h>
+
+int main(){
+	printf("hello world!!!\n"); 
+}
+--------------------------------------
+
+#python
+
+
+#hello world!!!
+-------------------------------
+#!/usr/bin/python
+
+print("hello world!!!!!!")
+
+-----------------------------
+
+
+#print number and word and sentence
+-----------------------------------------
+print("hello. i'm raspberry pi~")
+print(78)
+print(1.23456)
+print('N')
+-------------------------------------
+
+#print deximal hexadecimal
+
+-----------------------------------
+
+print("%d"%78)
+print("%d %x"%(78,78)) #decimal hexadecimal
+print("%.0f"%1.23456) #.0
+print("%.2f"%1.23456) #.00
+print("%.4f"%1.23456) #.0000
+
+----------------------------------------
+
+#try except syntax repeat
+----------------------------------
+import time    #import == include
+
+try:       #try except syntax
+	while True:
+		print("hello! I'm raspberry pi~")
+		time.sleep(1.0)		
+except keyboardinterrupt: # keyboardinterrupt removed
+	pass #equal c languege's    ;
+
+-----------------------------------------
+
+
+
+#led_flickering
+------------------------------------------------
+import RPi.GPIO as GPIO #general GPIO use
+import time
+
+led_pin = 17 #0 for Wiring pi
+
+GPIO.setmode(GPIO.BCM) #broadcom's gpio pin #17 use 
+GPIO.setup(led_pin, GPIO.OUT) #GPIO's output use
+
+try:
+	while True:
+		GPIO.output(led_pin, True)
+		time.sleep(0.09)
+		GPIO.output(led_pin, False)  
+		time.sleep(0.01)    #flickering led
+except keyboardinterrupt:
+	pass
+	
+GPIO.cleanup() #open GPIO -> stop to connect pin.
+
+
+#10Hz ok. 100Hz doesn't identify 1:9 rate-> more dark 9:1 ->more bright
+-------------------------------------------------------
+
+
+
+#extra homework slowly led on/off
+
+-----------------------------------
+import RPi.GPIO as GPIO #general GPIO use
+import time
+
+led_pin = 17 #0 for Wiring pi
+
+
+dc = [0,1,2,3,4,5,6,7,8,9,10,12,13,15,20,30,40,50,60,70,71,72,73,75,80,90,93,94,95,96,100]
+
+GPIO.setmode(GPIO.BCM) #broadcom's gpio pin #17 use 
+GPIO.setup(led_pin, GPIO.OUT) #GPIO's output use
+
+p = GPIO.PWM(led_pin,100)
+
+p.start(0)
+
+try:
+	while True:
+		for val in dc:
+			p.ChangeDutyCycle(val)
+			time.sleep(0.1)
+		
+		dc.reverse()
+		time.sleep(0.01) 
+		#flickering led
+except keyboardinterrupt:
+	pass
+	
+p.stop()
+	
+GPIO.cleanup() #open GPIO -> stop to connect pin.
+
+------------------------------------------------------------
+
+
+

@@ -1,0 +1,10 @@
+gcc print.c -o print -lwiringPi --save-temps
+tera 창에 적으면
+
+print.c -> print.i -> print.s -> print.o ->print
+pad++에 파일 나온다.
+
+
+servo,bldc는 50Hz(=20ms)
+1~2ms(H) servo는 180도 bldc가장 빠름
+19~18ms(L) servo는 0도 bldc는 멈춤
